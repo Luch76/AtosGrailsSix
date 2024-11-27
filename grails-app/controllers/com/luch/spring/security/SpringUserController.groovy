@@ -1,6 +1,5 @@
 package com.luch.spring.security
 
-import com.luch.Mailer
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 import static org.springframework.http.HttpStatus.*
@@ -11,12 +10,6 @@ class SpringUserController {
     SpringUserService springUserService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
-
-    def sendMail() {
-        Mailer.send("automatedemail@cloudwaresoft.com","7N7ELJo134GM","DarthLuch@gmail.com","hello javatpoint","How r u?");
-
-        render "mail sent";
-    }
 
     def index(Integer max) {
         params.max = Math.min(max ?: 10, 100)

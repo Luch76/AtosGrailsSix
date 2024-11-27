@@ -1,14 +1,13 @@
 package com.luch.spring.security
 
 import grails.gorm.DetachedCriteria
-import grails.plugins.orm.auditable.Auditable
 import groovy.transform.ToString
 import org.codehaus.groovy.util.HashCodeHelper
 import grails.compiler.GrailsCompileStatic
 
 @GrailsCompileStatic
 @ToString(cache=true, includeNames=true, includePackage=false)
-class SpringUserSpringRole implements Serializable, Auditable {
+class SpringUserSpringRole implements Serializable {
 
 	SpringUser createdBy, lastUpdatedBy;
 	Date dateCreated,  lastUpdated;

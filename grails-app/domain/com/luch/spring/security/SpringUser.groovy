@@ -1,6 +1,5 @@
 package com.luch.spring.security
 
-import grails.plugins.orm.auditable.Auditable
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 import grails.compiler.GrailsCompileStatic
@@ -8,7 +7,7 @@ import grails.compiler.GrailsCompileStatic
 @GrailsCompileStatic
 @EqualsAndHashCode(includes='username')
 @ToString(includes='username', includeNames=true, includePackage=false)
-class SpringUser implements Serializable, Auditable {
+class SpringUser implements Serializable {
 
     SpringUser createdBy, lastUpdatedBy;
     Date dateCreated,  lastUpdated;

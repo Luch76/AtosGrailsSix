@@ -25,23 +25,6 @@ configurations {
             }
         }
     }
-
-    // Luch - below block is needed for liquibase/db-migration when deployed to Tomcat
-    developmentOnly
-    runtimeClasspath {
-        // Excludes from database-migration
-        exclude group: 'org.grails', module: 'grails-shell'
-    }
-
-}
-
-// Luch
-sourceSets {
-    main {
-        resources {
-            srcDir 'grails-app/migrations'
-        }
-    }
 }
 
 dependencies {
@@ -83,50 +66,13 @@ dependencies {
     testImplementation("io.micronaut:micronaut-http-client")
 
     // Luch
-    // Oracle Files
-    implementation("com.oracle.database.jdbc:ojdbc11-production:23.4.0.24.05") {
-        exclude group: 'com.oracle.database.xml', module: 'xmlparserv2'
-    }
-    implementation files('lib/ojdbc11-full/oraclepki.jar');
-
     implementation 'org.grails.plugins:spring-security-core:6.0.3'
+    implementation 'org.grails.plugins:spring-security-ldap:4.0.0.M1'
     implementation group: 'org.grails.plugins', name: 'spring-security-rest', version: '3.0.1'
     // https://mvnrepository.com/artifact/org.grails/grails-shell
     implementation group: 'org.grails', name: 'grails-shell', version: '6.1.2'
-    implementation 'org.grails.plugins:database-migration:4.2.1'
-    implementation 'org.liquibase:liquibase-core:4.19.0'
-    implementation 'org.grails.plugins:audit-logging:4.0.3'
-    // https://mvnrepository.com/artifact/com.sun.mail/javax.mail
-    implementation group: 'com.sun.mail', name: 'javax.mail', version: '1.6.2'
+    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.10.0'
 
-    // Below not updated for Grails-Six
-    implementation group: 'xerces', name: 'xercesImpl', version: '2.12.2'
-    //compile group: 'org.acegisecurity', name: 'acegi-security', version: '1.0.7'
-    implementation 'com.thoughtworks.xstream:xstream:1.4.7'
-    implementation group: 'commons-io', name: 'commons-io', version: '2.5'
-    implementation group: 'com.opencsv', name: 'opencsv', version: '3.8'
-    // https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk15on
-    implementation group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: '1.68'
-    // https://mvnrepository.com/artifact/org.apache.poi/poi
-    implementation group: 'org.apache.poi', name: 'poi', version: '4.1.1'
-    // https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml
-    implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '4.1.1'
-    // https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml-schemas
-    implementation group: 'org.apache.poi', name: 'poi-ooxml-schemas', version: '4.1.1'
-    // https://mvnrepository.com/artifact/org.apache.poi/poi-scratchpad
-    implementation group: 'org.apache.poi', name: 'poi-scratchpad', version: '4.1.1'
-    // https://mvnrepository.com/artifact/org.apache.xmlbeans/xmlbeans
-    implementation group: 'org.apache.xmlbeans', name: 'xmlbeans', version: '3.1.0'
-    // http://mvnrepository.com/artifact/org.acegisecurity/acegi-security
-    implementation 'com.squareup.okio:okio:1.8.0'
-    implementation 'com.squareup.okhttp3:okhttp:3.3.1'
-    //2020-11-27 - Apache PDFBox for converting PDF to JPG
-    // https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox
-    implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.24'
-    // https://mvnrepository.com/artifact/org.apache.xmlgraphics/fop
-    implementation group: 'org.apache.xmlgraphics', name: 'fop', version: '2.2'
-    // https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-i18n
-    implementation group: 'org.apache.xmlgraphics', name: 'batik-i18n', version: '1.9'
 }
 
 application {
