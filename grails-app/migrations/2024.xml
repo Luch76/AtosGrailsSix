@@ -1,0 +1,220 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+>
+
+    <property name="now" value="sysdate" dbms="oracle"/>
+    <property name="now" value="now()" dbms="mysql"/>
+    <property name="now" value="now()" dbms="postgresql"/>
+
+    <changeSet author="DarthLuch@gmail.com" id="2024-06-22-AuditLogCreate-105">
+        <createTable tableName="AUDIT_LOG">
+            <column autoIncrement="true" name="ID" type="BIGINT"><constraints primaryKey="true" /></column>
+            <column name="PERSISTED_OBJECT_ID" type="VARCHAR(500)" />
+            <column name="PROPERTY_NAME" type="VARCHAR(500)" />
+            <column name="DATE_CREATED" type="datetime" />
+            <column name="LAST_UPDATED" type="datetime" />
+            <column name="EVENT_NAME" type="VARCHAR(500)" />
+            <column name="ACTOR" type="VARCHAR(500)" />
+            <column name="NEW_VALUE" type="VARCHAR(4000)" />
+            <column name="CLASS_NAME" type="VARCHAR(4000)" />
+            <column name="OLD_VALUE" type="VARCHAR(4000)" />
+            <column name="PERSISTED_OBJECT_VERSION" type="BIGINT" />
+            <column name="URI" type="VARCHAR(1000)" />
+        </createTable>
+    </changeSet>
+    <changeSet author="DarthLuch@gmail.com" id="2024-06-22-AuditLogCreate-200" dbms="oracle">
+        <sql>alter table "AUDIT_LOG" modify "PERSISTED_OBJECT_ID" varchar2(500 char);</sql>
+        <sql>alter table "AUDIT_LOG" modify "PROPERTY_NAME" varchar2(500 char);</sql>
+        <sql>alter table "AUDIT_LOG" modify "EVENT_NAME" varchar2(500 char);</sql>
+        <sql>alter table "AUDIT_LOG" modify "ACTOR" varchar2(500 char);</sql>
+        <sql>alter table "AUDIT_LOG" modify "NEW_VALUE" varchar2(4000 char);</sql>
+        <sql>alter table "AUDIT_LOG" modify "CLASS_NAME" varchar2(4000 char);</sql>
+        <sql>alter table "AUDIT_LOG" modify "OLD_VALUE" varchar2(4000 char);</sql>
+        <sql>alter table "AUDIT_LOG" modify "URI" varchar2(1000 char);</sql>
+    </changeSet>
+
+    <changeSet author="DarthLuch@gmail.com" id="2024-06-22-SpringSecurity-120">
+        <createTable tableName="SPRING_USER">
+            <column autoIncrement="true" name="ID" type="BIGINT"><constraints primaryKey="true" /></column>
+            <column name="VERSION" type="int" ><constraints nullable="false"/></column>
+            <column name="CREATED_BY_ID" type="bigint" />
+            <column name="DATE_CREATED" type="datetime" ><constraints nullable="false"/></column>
+            <column name="LAST_UPDATED_BY_ID" type="bigint" />
+            <column name="LAST_UPDATED" type="datetime" ><constraints nullable="false"/></column>
+            <column name="PASSWORD_EXPIRED" type="tinyint" />
+            <column name="USERNAME" type="VARCHAR(1000)" ><constraints nullable="false"/></column>
+            <column name="ACCOUNT_LOCKED" type="tinyint" />
+            <column name="PASSWORD" type="VARCHAR(1000)" />
+            <column name="ACCOUNT_EXPIRED" type="tinyint" />
+            <column name="ENABLED" type="tinyint" />
+        </createTable>
+        <createTable tableName="SPRING_ROLE">
+            <column autoIncrement="true" name="ID" type="BIGINT"><constraints primaryKey="true" /></column>
+            <column name="VERSION" type="int" ><constraints nullable="false"/></column>
+            <column name="CREATED_BY_ID" type="BIGINT" ><constraints nullable="false"/></column>
+            <column name="DATE_CREATED" type="datetime" ><constraints nullable="false"/></column>
+            <column name="LAST_UPDATED_BY_ID" type="bigint" ><constraints nullable="false"/></column>
+            <column name="LAST_UPDATED" type="datetime" ><constraints nullable="false"/></column>
+            <column name="AUTHORITY" type="VARCHAR(100)" ><constraints nullable="false"/></column>
+        </createTable>
+        <addUniqueConstraint
+                columnNames="AUTHORITY"
+                constraintName="U_SPRING_ROLE_NAME"
+                tableName="SPRING_ROLE"
+        />
+        <createTable tableName="SPRING_USER_SPRING_ROLE">
+            <column autoIncrement="true" name="ID" type="BIGINT"><constraints primaryKey="true" /></column>
+            <column name="VERSION" type="int" ><constraints nullable="false"/></column>
+            <column name="CREATED_BY_ID" type="bigint" ><constraints nullable="false"/></column>
+            <column name="DATE_CREATED" type="datetime" ><constraints nullable="false"/></column>
+            <column name="LAST_UPDATED_BY_ID" type="bigint" ><constraints nullable="false"/></column>
+            <column name="LAST_UPDATED" type="datetime" ><constraints nullable="false"/></column>
+            <column name="SPRING_USER_ID" type="bigint" ><constraints nullable="false"/></column>
+            <column name="SPRING_ROLE_ID" type="bigint" ><constraints nullable="false"/></column>
+        </createTable>
+        <addUniqueConstraint
+                columnNames="SPRING_USER_ID, SPRING_ROLE_ID"
+                constraintName="U_SPRING_USER_SPRING_ROLE_PAIR"
+                tableName="SPRING_USER_SPRING_ROLE"
+        />
+        <addForeignKeyConstraint
+                baseColumnNames="SPRING_USER_ID" baseTableName="SPRING_USER_SPRING_ROLE"
+                constraintName="FK_SPRING_USER"
+                referencedColumnNames="ID" referencedTableName="SPRING_USER"
+        />
+        <addForeignKeyConstraint
+                baseColumnNames="SPRING_ROLE_ID" baseTableName="SPRING_USER_SPRING_ROLE"
+                constraintName="FK_SPRING_ROLE"
+                referencedColumnNames="ID" referencedTableName="SPRING_ROLE"
+        />
+    </changeSet>
+    <changeSet author="DarthLuch@gmail.com" id="2024-06-22-SpringSecurity-125" dbms="oracle">
+        <sql>
+            INSERT INTO spring_user (
+                "VERSION",    created_by_id,    date_created,    last_updated_by_id,    last_updated,
+                password_expired,    username,    account_locked,    "PASSWORD",    account_expired,    enabled
+            )
+            SELECT
+                0 AS "VERSION",    null as created_by_id,    sysdate as date_created,  null as last_updated_by_id, sysdate as last_updated,
+                0 as password_expired,  'SYSTEM' as username, 0 as   account_locked, null as   "PASSWORD", 0 as   account_expired,  1 as  enabled
+            FROM DUAL
+            WHERE 1=1
+            ;
+        </sql>
+    </changeSet>
+    <changeSet author="DarthLuch@gmail.com" id="2024-06-22-SpringSecurity-150" dbms="oracle">
+        <sql>
+            UPDATE SPRING_USER SU
+            SET CREATED_BY_ID = ID, LAST_UPDATED_BY_ID = ID
+            WHERE 1=1
+              AND SU.USERNAME = 'SYSTEM'
+            ;
+        </sql>
+        <addNotNullConstraint
+                columnDataType="int"
+                columnName="CREATED_BY_ID"
+                tableName="SPRING_USER"
+        />
+        <addNotNullConstraint
+                columnDataType="int"
+                columnName="last_updated_by_id"
+                tableName="SPRING_USER"
+        />
+    </changeSet>
+    <changeSet author="DarthLuch@gmail.com" id="2024-06-22-SpringSecurity-200" dbms="oracle">
+        <sql>alter table "SPRING_ROLE" modify "AUTHORITY" varchar2(100 char);</sql>
+        <sql>alter table "SPRING_USER" modify "USERNAME" varchar2(1000 char);</sql>
+        <sql>alter table "SPRING_USER" modify "PASSWORD" varchar2(1000 char);</sql>
+    </changeSet>
+
+    <changeSet author="DarthLuch@gmail.com" id="2024-06-23-Bookstore-100">
+        <createTable tableName="BOOK">
+            <column autoIncrement="true" name="ID" type="BIGINT"><constraints primaryKey="true" /></column>
+            <column name="VERSION" type="int" ><constraints nullable="false"/></column>
+            <column name="CREATED_BY_ID" type="BIGINT" ><constraints nullable="false"/></column>
+            <column name="DATE_CREATED" type="datetime" ><constraints nullable="false"/></column>
+            <column name="LAST_UPDATED_BY_ID" type="bigint" ><constraints nullable="false"/></column>
+            <column name="LAST_UPDATED" type="datetime" ><constraints nullable="false"/></column>
+            <column name="TITLE" type="VARCHAR(1000)" ><constraints nullable="false"/></column>
+        </createTable>
+    </changeSet>
+    <changeSet author="DarthLuch@gmail.com" id="2024-06-23-Bookstore-200" dbms="oracle">
+        <sql>alter table "BOOK" modify "TITLE" varchar2(1000 char);</sql>
+    </changeSet>
+
+    <changeSet author="DarthLuch@gmail.com" id="2024-06-24-GtgMaster-100">
+        <createTable tableName="GTG_MASTER">
+            <column name="ID" type="BIGINT" autoIncrement="true"><constraints primaryKey="true" /></column>
+            <column name="VERSION" type="int" ><constraints nullable="false"/></column>
+            <column name="CREATED_BY_ID" type="int" ><constraints nullable="false"/></column>
+            <column name="DATE_CREATED" type="datetime" ><constraints nullable="false"/></column>
+            <column name="LAST_UPDATED_BY_ID" type="bigint" ><constraints nullable="false"/></column>
+            <column name="LAST_UPDATED" type="datetime" ><constraints nullable="false"/></column>
+            <column name="NAME" type="VARCHAR(1000)" ><constraints nullable="false"/></column>
+            <column name="DESCRIPTION" type="VARCHAR(4000)" />
+            <column name="NO_OF_REPS" type="int" />
+        </createTable>
+    </changeSet>
+    <changeSet author="DarthLuch@gmail.com" id="2024-06-24-GtgMaster-200" dbms="oracle">
+        <sql>alter table "GTG_MASTER" modify "NAME" varchar2(1000 char);</sql>
+        <sql>alter table "GTG_MASTER" modify "DESCRIPTION" varchar2(4000 char);</sql>
+    </changeSet>
+
+    <changeSet author="DarthLuch@gmail.com" id="2024-07-02-FILE_HEADER-100-105">
+        <createTable tableName="FILE_HEADER">
+            <column name="ID" type="BIGINT" autoIncrement="true"><constraints primaryKey="true" /></column>
+            <column name="VERSION" type="int" ><constraints nullable="false"/></column>
+            <column name="CREATED_BY_ID" type="bigint" ><constraints nullable="false"/></column>
+            <column name="DATE_CREATED" type="datetime" ><constraints nullable="false"/></column>
+            <column name="LAST_UPDATED_BY_ID" type="bigint" ><constraints nullable="false"/></column>
+            <column name="LAST_UPDATED" type="datetime" ><constraints nullable="false"/></column>
+            <column name="FILENAME" type="VARCHAR(1000)" />
+            <column name="DESCRIPTION" type="VARCHAR(4000)" />
+        </createTable>
+    </changeSet>
+    <changeSet author="DarthLuch@gmail.com" id="2024-07-02-FILE_HEADER-105-105" dbms="oracle">
+        <sql>alter table "FILE_HEADER" modify "FILENAME" varchar2(1000 char);</sql>
+        <sql>alter table "FILE_HEADER" modify "DESCRIPTION" varchar2(4000 char);</sql>
+    </changeSet>
+    <changeSet author="DarthLuch@gmail.com" id="2024-07-02-FILE_SPREADSHEET-100-105">
+        <createTable tableName="FILE_SPREADSHEET">
+            <column name="ID" type="BIGINT" autoIncrement="true"><constraints primaryKey="true" /></column>
+            <column name="VERSION" type="int" ><constraints nullable="false"/></column>
+            <column name="CREATED_BY_ID" type="bigint" ><constraints nullable="false"/></column>
+            <column name="DATE_CREATED" type="datetime" ><constraints nullable="false"/></column>
+            <column name="LAST_UPDATED_BY_ID" type="bigint" ><constraints nullable="false"/></column>
+            <column name="LAST_UPDATED" type="datetime" ><constraints nullable="false"/></column>
+            <column name="FILE_HEADER_ID" type="BIGINT" ><constraints nullable="false"/></column>
+            <column name="SHEET_NO" type="INT" ><constraints nullable="false"/></column>
+            <column name="SHEET_NAME" type="VARCHAR(1000)" />
+            <column name="ROW_NO" type="INT" ><constraints nullable="false"/></column>
+            <column name="COLUMN_NO" type="VARCHAR(100)" ><constraints nullable="false"/></column>
+            <column name="TYPE_ATTRIBUTE" type="VARCHAR(100)" />
+            <column name="VALUE" type="CLOB" />
+        </createTable>
+        <addForeignKeyConstraint
+                baseColumnNames="FILE_HEADER_ID"
+                baseTableName="FILE_SPREADSHEET"
+                constraintName="FK_FILE_SHEET_FILE_HDR"
+                referencedColumnNames="ID"
+                referencedTableName="FILE_HEADER"
+        />
+        <createIndex indexName="I_FILE_SHEET_IMPORT_FILE_HDR_ID" tableName="FILE_SPREADSHEET">
+            <column name="FILE_HEADER_ID"/>
+        </createIndex>
+        <createIndex indexName="I_FILE_SHEET_ROW" tableName="FILE_SPREADSHEET">
+            <column name="FILE_HEADER_ID"/>
+            <column name="SHEET_NO"/>
+            <column name="ROW_NO"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="DarthLuch@gmail.com" id="2024-07-02-FILE_SPREADSHEET-105-105" dbms="oracle">
+        <sql>alter table "FILE_SPREADSHEET" modify "SHEET_NAME" varchar2(1000 char);</sql>
+        <sql>alter table "FILE_SPREADSHEET" modify "TYPE_ATTRIBUTE" varchar2(100 char);</sql>
+        <sql>alter table "FILE_SPREADSHEET" modify "COLUMN_NO" varchar2(100 char);</sql>
+    </changeSet>
+
+</databaseChangeLog>
