@@ -1,10 +1,17 @@
-package com.luch
+package com.luch;
 
 import groovy.json.JsonBuilder
-import okhttp3.*
+import okhttp3.Cookie
+import okhttp3.CookieJar
+import okhttp3.HttpUrl
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.Response
 import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONObject
-
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
@@ -14,7 +21,7 @@ class OkHttpTestClient {
     String baseUrl;
     OkHttpClient client;
 
-    def init(String aBaseUrl, String aUsername, String aPassword) {
+    def initJsonToken(String aBaseUrl, String aUsername, String aPassword) {
         RequestBody body;
         Response response;
         Request request;
@@ -88,6 +95,61 @@ Request request = new Request.Builder()
 Response response = client.newCall(request).execute();
          */
 
+    }
+
+    def initSession(String aBaseUrl, String aUsername, String aPassword) {
+        RequestBody body;
+        Response response;
+        Request request;
+        CookieJar cookieJar;
+        Integer responseCode;
+        String username;
+        String password;
+        String responseBody;
+        def responseJson;
+
+        baseUrl = aBaseUrl;
+        username = aUsername;
+        password = aPassword;
+
+        println("OkHttpTestClient, init, username: " + username);
+
+        cookieJar = new CookieJar() {
+            private final HashMap<String, List<Cookie>> cookieStore = new HashMap<>();
+
+            @Override
+            public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
+                cookieStore.put(url.host(), cookies);
+            }
+
+            @Override
+            public List<Cookie> loadForRequest(HttpUrl url) {
+                List<Cookie> cookies = cookieStore.get(url.host());
+                return cookies != null ? cookies : new ArrayList<Cookie>();
+            }
+        };
+        println("OkHttpTestClient, init, baseUrl: " + baseUrl);
+        client = new OkHttpClient.Builder()
+                .cookieJar(cookieJar)
+                .connectTimeout(10, TimeUnit.MINUTES)
+                .readTimeout(10, TimeUnit.MINUTES)
+                .writeTimeout(10, TimeUnit.MINUTES)
+                .build();
+        body = new MultipartBody.Builder().setType(MultipartBody.FORM)
+                .addFormDataPart("username", username)
+                .addFormDataPart("password", password)
+                .build();
+        request = new okhttp3.Request.Builder()
+                .url(baseUrl + "/login/authenticate")
+                .method("POST", body)
+                .build();
+        response = client.newCall(request).execute();
+        responseCode = response.code();
+        responseBody = response.body()?.string();
+
+        response.close();
+        println("OkHttpTestClient, init, login-auth: responseCode: " + responseCode);
+        return [responseCode: responseCode, responseJson: responseJson];
     }
 
     def get(String url) {

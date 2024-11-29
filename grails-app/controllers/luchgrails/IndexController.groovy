@@ -15,9 +15,13 @@ class IndexController {
     LuchSessionService luchSessionService;
 
     def okay() {
-        render "OK";
+        respond(
+                [
+                        message: "Secure access only",
+                        principal: springSecurityService.principal,
+                ]
+        );
     }
-
 
     def index() {
         def modules;
