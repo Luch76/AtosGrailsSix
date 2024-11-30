@@ -1,26 +1,22 @@
-server: #Luch
-  port: 8080
----
 info:
   app:
     name: '@info.app.name@'
     version: '@info.app.version@'
     grailsVersion: '@info.app.grailsVersion@'
+dataSource:
+  url: jdbc:h2:mem:devDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
+  driverClassName: org.h2.Driver
+  username: sa
+  password: ''
+  pooled: true
+  jmxExport: true
+  dbCreate: update
+hibernate:
+  cache:
+    queries: false
+    use_second_level_cache: false
+    use_query_cache: false
 grails:
-  gorm:
-    default:
-      constraints: "'*'(nullable: true)"
-    failOnError: true  #Luch
-  cors:
-    enabled: false #Luch
-  databinding: # https://schneide.blog/2018/10/16/consistency-over-magic-please/
-    convertEmptyStringsToNull: false #Luch
-    trimStrings: false #Luch
-  controllers:
-      defaultScope: singleton
-      upload:
-        maxFileSize: 1073741824            #Luch
-        maxRequestSize: 1073741824        #Luch
   views:
     default:
       codec: html
@@ -64,115 +60,3 @@ grails:
       xml:
       - text/xml
       - application/xml
-  plugin:
-    springsecurity:
-      rejectIfNoRule: true
-      rejectPublicInvocations: false
-      userLookup:
-        userDomainClassName: 'com.luch.spring.security.SpringUser'
-        authorityJoinClassName: 'com.luch.spring.security.SpringRole'
-      authority:
-        className: 'example.grails.SecurityRole'
-      logout:
-        postOnly: false
-      rest:
-        token:
-          storage:
-            jwt:
-              secret: 'pleaseChangeThisSecretForANewOne'
-      ldap:
-        context:
-          server: 'ldap://localhost'
-          managerDn: 'cn=admin,dc=jeantessier,dc=com'
-          managerPassword: 'admin'
-        search:
-          base: "dc=jeantessier,dc=com"
-        authorities:
-          groupSearchBase: 'ou=groups,dc=jeantessier,dc=com'
-      securityConfigType: "Annotation" #"InterceptUrlMap"
-      filterChain:
-        chainMap: [
-          {pattern: '/api/**',    filters: 'JOINED_FILTERS,-anonymousAuthenticationFilter,-exceptionTranslationFilter,-authenticationProcessingFilter,-securityContextPersistenceFilter,-rememberMeAuthenticationFilter'},
-          {pattern: '/**',        filters: 'JOINED_FILTERS'}
-          #{pattern: '/**',        filters: 'JOINED_FILTERS,-restTokenValidationFilter,-restExceptionTranslationFilter'}
-        ]
-      controllerAnnotations:
-        staticRules: [
-          {pattern: '/',                          access: ['permitAll']},
-          {pattern: '/error',                     access: ['permitAll']},
-          {pattern: '/index',                     access: ['permitAll']},
-          {pattern: '/index.gsp',                 access: ['permitAll']},
-          {pattern: '/shutdown',                  access: ['permitAll']},
-          {pattern: '/assets/**',                 access: ['permitAll']},
-          {pattern: '/**/js/**',                  access: ['permitAll']},
-          {pattern: '/**/css/**',                 access: ['permitAll']},
-          {pattern: '/**/images/**',              access: ['permitAll']},
-          {pattern: '/**/favicon.ico',            access: ['permitAll']},
-          {pattern: '/login/**',                  access: ['permitAll']},
-          {pattern: '/logout',                    access: ['permitAll']},
-          {pattern: '/logout/**',                 access: ['permitAll']},
-          {pattern: '/api/login',                 access: ['ROLE_ANONYMOUS']},
-          {pattern: '/oauth/access_token',        access: ['ROLE_ANONYMOUS']},
-          {pattern: '/springUser/**',             access: ['ROLE_ADMIN']},
-          {pattern: '/springRole/**',             access: ['ROLE_ADMIN']},
-          {pattern: '/springUserSpringRole/**',   access: ['ROLE_ADMIN']},
-          #{pattern: '/api/announcements',         access: ['ROLE_BOSS'], httpMethod: 'GET'},
-          #{pattern: '/api/announcements/*',       access: ['ROLE_BOSS'], httpMethod: 'GET'},
-          #{pattern: '/api/announcements/*',       access: ['ROLE_BOSS'], httpMethod: 'DELETE'},
-          #{pattern: '/api/announcements',         access: ['ROLE_BOSS'], httpMethod: 'POST'},
-          #{pattern: '/api/announcements/*',       access: ['ROLE_BOSS'], httpMethod: 'PUT'}
-          #{pattern: '/secure',                    access: ['ROLE_ADMIN']},
-          #{pattern: '/secure/index',              access: ['ROLE_ADMIN']},
-          #{pattern: '/fileSpreadsheetImport',               access: ['ROLE_EMPLOYEE']},
-          #{pattern: '/fileSpreadsheetImport/index',         access: ['ROLE_EMPLOYEE']},
-        ]
-
----
----
-hibernate:
-  cache:
-    queries: false
-    use_second_level_cache: false
-    use_query_cache: false
-dataSource:
-  pooled: true
-  jmxExport: true
-  driverClassName: org.h2.Driver
-  username: sa
-  password: ''
-
-environments:
-  development:
-    dataSource:
-      dbCreate: create-drop
-      url: jdbc:h2:mem:devDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
-      logSql: true
-  test:
-    dataSource:
-      dbCreate: update
-      url: jdbc:h2:mem:testDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
-  production:
-    dataSource:
-      dbCreate: none
-      url: jdbc:h2:./prodDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
-      properties:
-        jmxEnabled: true
-        initialSize: 5
-        maxActive: 50
-        minIdle: 5
-        maxIdle: 25
-        maxWait: 10000
-        maxAge: 600000
-        timeBetweenEvictionRunsMillis: 5000
-        minEvictableIdleTimeMillis: 60000
-        validationQuery: SELECT 1
-        validationQueryTimeout: 3
-        validationInterval: 15000
-        testOnBorrow: true
-        testWhileIdle: true
-        testOnReturn: false
-        jdbcInterceptors: ConnectionState
-        defaultTransactionIsolation: 2 # TRANSACTION_READ_COMMITTED
-
-
-

@@ -2,7 +2,6 @@ plugins {
     id "groovy"
     id "org.grails.grails-web"
     id "org.grails.grails-gsp"
-    id "com.github.erdi.webdriver-binaries"
     id "war"
     id "idea"
     id "com.bertramlabs.asset-pipeline"
@@ -10,7 +9,7 @@ plugins {
     id "eclipse"
 }
 
-group = "com.luch"
+group = "AtosGrailsSix"
 
 repositories {
     mavenCentral()
@@ -55,28 +54,13 @@ dependencies {
     testImplementation("io.micronaut:micronaut-inject-groovy")
     testImplementation("org.grails:grails-gorm-testing-support")
     testImplementation("org.grails:grails-web-testing-support")
-    testImplementation("org.grails.plugins:geb")
-    testImplementation("org.seleniumhq.selenium:selenium-api:4.19.1")
-    testImplementation("org.seleniumhq.selenium:selenium-remote-driver:4.19.1")
-    testImplementation("org.seleniumhq.selenium:selenium-support:4.19.1")
     testImplementation("org.spockframework:spock-core")
-    testRuntimeOnly("org.seleniumhq.selenium:selenium-chrome-driver:4.19.1")
-    testRuntimeOnly("org.seleniumhq.selenium:selenium-firefox-driver:4.19.1")
-    testRuntimeOnly("org.seleniumhq.selenium:selenium-safari-driver:4.19.1")
     testImplementation("io.micronaut:micronaut-http-client")
-
-    // Luch
-    implementation 'org.grails.plugins:spring-security-core:6.0.3'
-    implementation 'org.grails.plugins:spring-security-ldap:4.0.0.M1'
-    implementation group: 'org.grails.plugins', name: 'spring-security-rest', version: '3.0.1'
-    // https://mvnrepository.com/artifact/org.grails/grails-shell
-    implementation group: 'org.grails', name: 'grails-shell', version: '6.1.2'
-    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.10.0'
 
 }
 
 application {
-    mainClass.set("com.luch.Application")
+    mainClass.set("AtosGrailsSix.Application")
 }
 
 java {
@@ -90,17 +74,7 @@ tasks.withType(Test) {
     systemProperty 'webdriver.chrome.driver', "${System.getenv('CHROMEWEBDRIVER')}/chromedriver"
     systemProperty 'webdriver.gecko.driver', "${System.getenv('GECKOWEBDRIVER')}/geckodriver"
 }
-webdriverBinaries {
-    chromedriver '122.0.6260.0'
-    geckodriver '0.33.0'
-    edgedriver '110.0.1587.57'
-}
 assets {
     minifyJs = true
     minifyCss = true
-}
-
-//Luch
-war {
-    archiveName "${war.baseName}.war"
 }
