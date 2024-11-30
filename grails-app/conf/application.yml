@@ -60,3 +60,20 @@ grails:
       xml:
       - text/xml
       - application/xml
+  plugin:
+    springsecurity:
+      logout.postOnly: false
+      rest:
+        token:
+          storage:
+            jwt:
+              secret: '0182830a-0aa9-78e6-b9d9-2ee60371d970'
+      ldap:
+        context:
+          server: 'ldap://localhost'
+          managerDn: 'cn=admin,dc=jeantessier,dc=com'
+          managerPassword: 'admin'
+        search:
+          base: "dc=jeantessier,dc=com"
+        authorities:
+          groupSearchBase: 'ou=groups,dc=jeantessier,dc=com'
