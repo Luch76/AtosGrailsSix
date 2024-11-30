@@ -57,6 +57,12 @@ dependencies {
     testImplementation("org.spockframework:spock-core")
     testImplementation("io.micronaut:micronaut-http-client")
 
+    //Luch
+    implementation 'org.grails.plugins:spring-security-core:6.0.3'
+    implementation group: 'org.grails.plugins', name: 'spring-security-rest', version: '3.0.1'
+    implementation 'org.grails.plugins:spring-security-ldap:4.0.0.M1'
+    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.10.0'
+
 }
 
 application {
