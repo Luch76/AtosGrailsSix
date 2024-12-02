@@ -7,7 +7,7 @@ class SecureController {
     def index() {
         respond(
         [
-                message: "Secure access only",
+                message: "Access granted to this secure-access-only controller",
                 principal: springSecurityService.principal,
         ]
         );
