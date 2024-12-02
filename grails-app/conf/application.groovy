@@ -1,3 +1,5 @@
+import com.example.myapp.AuthorityTest
+
 // Added by the Spring Security Core plugin:
 grails.plugin.springsecurity.userLookup.userDomainClassName = 'com.example.myapp.User'
 grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'com.example.myapp.UserRole'
@@ -36,7 +38,7 @@ grails.plugin.springsecurity.interceptUrlMap = [
 	[pattern: '/**/favicon.ico', 		access: ['permitAll']],
 	[pattern: '/api/login',				access: ['ROLE_ANONYMOUS']],
 	[pattern: '/oauth/access_token',	access: ['ROLE_ANONYMOUS']],
-	[pattern: '/secure',				access: ['hasAnyAuthority("ROLE_ADMIN")']],
+	[pattern: '/secure', 				access: ["hasAnyAuthority(${AuthorityTest.getCommaSeparatedAuthorities()})"]],
 ]
 
 grails.plugin.springsecurity.filterChain.chainMap = [
